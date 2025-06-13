@@ -1,0 +1,21 @@
+{
+    "name": "yourusername/ucrm-cashonrails-plugin",
+    "description": "cashonrails payment gateway integration for UCRM",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Your Name",
+            "email": "your.email@example.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.1",
+        "ubnt/ucrm-plugin-sdk": "^0.7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "cashonrailsPlugin\\": "src/"
+        }
+    }
+}

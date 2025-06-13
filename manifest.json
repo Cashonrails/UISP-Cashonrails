@@ -1,0 +1,75 @@
+{
+    "version": "1",
+    "information": {
+        "name": "cashonrails-payment-gateway",
+        "displayName": "cashonrails Payment Gateway",
+        "description": "Integration with cashonrails payment gateway for processing online payments in Nigeria and other African countries.",
+        "url": "https://github.com/yourusername/ucrm-cashonrails-plugin",
+        "version": "1.0.0",
+        "ucrmVersionCompliancy": {
+            "min": "2.13.0-beta1",
+            "max": null
+        },
+        "unmsVersionCompliancy": {
+            "min": "1.0.0-alpha.1",
+            "max": null
+        },
+        "author": "Your Name"
+    },
+    "configuration": [
+        {
+            "key": "cashonrailsPublicKey",
+            "label": "cashonrails Public Key",
+            "description": "Your cashonrails public key from your cashonrails dashboard",
+            "required": 1,
+            "type": "text"
+        },
+        {
+            "key": "cashonrailsSecretKey",
+            "label": "cashonrails Secret Key",
+            "description": "Your cashonrails secret key from your cashonrails dashboard",
+            "required": 1,
+            "type": "text"
+        },
+        {
+            "key": "webhookSecret",
+            "label": "Webhook Secret",
+            "description": "Optional: Secret key for validating webhook calls from cashonrails",
+            "required": 0,
+            "type": "text"
+        },
+        {
+            "key": "testMode",
+            "label": "Test Mode",
+            "description": "Enable test mode to use cashonrails's test environment",
+            "required": 0,
+            "type": "checkbox"
+        },
+        {
+            "key": "paymentDescription",
+            "label": "Payment Description",
+            "description": "Description that will appear on the payment page",
+            "required": 0,
+            "type": "textarea",
+            "default": "Pay your invoice using cashonrails payment gateway"
+        }
+    ],
+    "menu": [
+        {
+            "key": "Payment",
+            "label": "cashonrails Payments",
+            "type": "admin",
+            "target": "iframe",
+            "parameters": {
+                "hook": "main"
+            }
+        }
+    ],
+    "paymentButton": {
+        "label": "Pay with cashonrails",
+        "urlParameters": {
+            "action": "pay"
+        }
+    },
+    "supportsWebhookEvents": true
+}
