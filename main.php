@@ -1,5 +1,11 @@
 <?php
+
 declare(strict_types=1);
+
+
+// toggle errors
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE);
+ini_set('display_errors', '0');
 
 use Ubnt\UcrmPluginSdk\Service\UcrmSecurity;
 use Ubnt\UcrmPluginSdk\Service\UcrmApi;
@@ -16,7 +22,7 @@ $config = json_decode(file_get_contents($configPath), true);
 
 $publicKey = $config['cashonrailsPublicKey'] ?? null;
 $secretKey = $config['cashonrailsSecretKey'] ?? null;
-$secretKey = $config['currency'] ?? 'NGN';
+$currency = $config['currency'] ?? 'NGN';
 $webhookSecret = $config['webhookSecret'] ?? null;
 $testMode = $config['testMode'] ?? false;
 $paymentDescription = $config['paymentDescription'] ?? 'Pay your invoice using CashOnRails payment gateway';
@@ -114,6 +120,7 @@ function processRequest(): void
                     CURLOPT_HTTPHEADER => [
                         'Content-Type: application/json',
                         'Authorization: Bearer ' . $secretKey,
+
                     ],
                 ]);
 
@@ -121,11 +128,13 @@ function processRequest(): void
                 curl_close($ch);
                 $customerData = json_decode($customerResponse, true);
 
+
                 if (empty($customerData['data']['customer_code'])) {
                     throw new Exception("Customer creation failed.");
+                    // throw new Exception(json_encode([$customerData, $secretKey ], JSON_PRETTY_PRINT));
                 }
 
-                $reference = $token;
+                $reference = time()."-".$token;
                 $host = $_SERVER['HTTP_HOST'];
                 $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
                 $redirectUrl = "{$scheme}://{$host}/crm/_plugins/cashonrails-payment-gateway/public.php?action=verify";
@@ -155,7 +164,7 @@ function processRequest(): void
                 curl_close($ch);
                 $paymentData = json_decode($paymentResponse, true);
 
-//                var_dump($paymentData);
+                //                var_dump($paymentData);
                 if (!empty($paymentData['data']['authorization_url'])) {
                     echo "<script>window.location = '" . $paymentData['data']['authorization_url'] . "';</script>";
                     exit;
@@ -188,7 +197,7 @@ HTML;
                 }
 
 
-//                throw new Exception("Payment initialization failed.");
+                //                throw new Exception("Payment initialization failed.");
             } catch (Exception $e) {
                 http_response_code(400);
                 $message = htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8');
@@ -256,6 +265,11 @@ HTML;
                 exit('Payment verification failed or payment not successful.');
             }
 
+            // split $reference  and get the token part
+            $parts = explode('-', $reference, 2);
+            $reference = $parts[1] ;
+
+
             $get_invoice = $api->get("payment-tokens/{$reference}");
             $invoiceIdsToPay = [];
 
@@ -308,9 +322,9 @@ HTML;
 </html>
 HTML;
                 } catch (Exception $e) {
-//                    http_response_code(500);
-//                    echo "<h2>❌ Error updating invoice</h2>";
-//                    echo "<p>" . htmlspecialchars($e->getMessage()) . "</p>";
+                    //                    http_response_code(500);
+                    //                    echo "<h2>❌ Error updating invoice</h2>";
+                    //                    echo "<p>" . htmlspecialchars($e->getMessage()) . "</p>";
                 }
             }
             break;
