@@ -7,6 +7,18 @@ declare(strict_types=1);
 error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE);
 ini_set('display_errors', '0');
 
+function randomString($length = 3) {
+    $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $result = '';
+    for ($i = 0; $i < $length; $i++) {
+        $index = rand(0, strlen($characters) - 1);
+        $result .= $characters[$index];
+    }
+    return $result;
+}
+
+
+
 use Ubnt\UcrmPluginSdk\Service\UcrmSecurity;
 use Ubnt\UcrmPluginSdk\Service\UcrmApi;
 
@@ -134,7 +146,8 @@ function processRequest(): void
                     // throw new Exception(json_encode([$customerData, $secretKey ], JSON_PRETTY_PRINT));
                 }
 
-                $reference = time()."-".$token;
+                $pre = randomString();
+                $reference = $pre."-".$token;
                 $host = $_SERVER['HTTP_HOST'];
                 $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
                 $redirectUrl = "{$scheme}://{$host}/crm/_plugins/cashonrails-payment-gateway/public.php?action=verify";
